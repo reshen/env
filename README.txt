@@ -1,3 +1,6 @@
+This project is source controlled at GitHub: http://github.com/reshen/env
+git clone git://github.com/reshen/env.git
+
 To install the unix env, svn checkout this folder and create
 symbolic links to the environment settings.
 
@@ -18,7 +21,4 @@ ln -s ~/env/linux/bin       ~/bin
 
 source $VIMRUNTIME/../vimfiles/gvimrc
 source $VIMRUNTIME/../vimfiles/vimrc
-
-Make sure to svn checkout:
-svn co https://serif.linuxsecured.net/svn/env/vim vimfiles
 
