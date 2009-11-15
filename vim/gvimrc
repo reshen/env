@@ -1,0 +1,51 @@
+" -----------------------------------------------------------------------------  
+" |                            VIM Settings                                   |
+" |                              GUI stuff                                    |
+" -----------------------------------------------------------------------------  
+
+
+" OS Specific *****************************************************************
+if has("gui_macvim")
+
+  set fuoptions=maxvert,maxhorz " fullscreen options (MacVim only), resized window when changed to fullscreen
+  set guifont=Monaco:h11
+  set guioptions-=T  " remove toolbar
+  set noanti "Turn off antialiasing of font
+
+elseif has("gui_gtk2")
+
+  "set guifont=Monaco
+  set guifont=Bitstream\ Vera\ Sans\ Mono\ 11
+  set guioptions-=T  " remove toolbar
+
+elseif has("x11")
+
+  "set guifont=Bitstream\ Vera\ Sans\ Mono\ 11
+  set guifont=-bitstream-bitstream\ vera\ sans\ mono-medium-r-normal--0-0-0-0-m-0-iso8859-15
+  set guioptions-=T  " remove toolbar
+
+elseif has("gui_win32")
+
+  set guifont=Bitstream_Vera_Sans_Mono:h9:cANSI
+  set guioptions-=T  " remove toolbar
+
+end
+
+" General *********************************************************************
+"set anti " Antialias font
+
+"set transparency=0
+
+" Default size of window
+set columns=90
+set lines=40
+
+" set label/tooltip for tabs to buffer number, filename, modified status
+set guitablabel=%N\ %t\ %M
+set guitabtooltip=%N\ %f\ %M
+
+" Always show tab line
+set showtabline=2
+
+" Turn off visual bell
+set novisualbell

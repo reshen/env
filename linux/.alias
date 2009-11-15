@@ -1,0 +1,83 @@
+# Aliases
+
+alias h=history
+alias cls=clear
+alias asrc='source ~/.alias'
+alias vsrc='vim ~/.alias'
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    eval "`dircolors -b`"
+
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
+    
+    alias grep='grep --color=auto --exclude="*.svn*"'
+
+    alias fgrep='fgrep --color=auto --exclude="*.svn*"'
+    alias egrep='egrep --color=auto --exclude="*.svn*"'
+fi
+
+# Enable mac specific aliases
+ENVNAME=`uname -s`
+#echo ".alias env : $ENVNAME"
+if [ "$ENVNAME" = "Darwin" ]; then
+    alias ls='ls -G'
+fi
+
+# Enable hostname specific path aliases
+HOSTNAME=`hostname`
+#echo ".alias host : $HOSTNAME"
+if [ "$HOSTNAME" = "jazz" ]; then
+    alias www='cd /var/www/'
+    alias arch='cd /archive'
+    alias inc='cd /archive/incoming/'
+    alias log='cd /var/log/'
+    alias logs=log
+elif [[ "$HOSTNAME" =~ ".*bluehost.*" ]]; then
+    alias www='cd ~/www/'
+elif [[ "$HOSTNAME" =~ "ratchet" ]]; then
+    alias www='cd /Applications/MAMP/htdocs/'
+    PATH=$PATH:/opt/local/bin
+#else
+#    echo "Other"
+fi
+
+
+# SSH aliases
+alias jazz='ssh -i ~/.ssh/serif.key serif@jazz'
+alias planc='ssh -i ~/.ssh/serif.key plancpho@plancphotography.com'
+alias ratchet='ssh -i ~/.ssh/serif.key serif@ratchet'
+alias rphx='ssh -i ~/.ssh/serif.key radiopho@radiophoenix.org'
+alias crypticrage='ssh -p 1050 -i ~/.ssh/serif.key phoenix@crypticrage.org'
+alias radiophx=rphx
+
+# some more ls aliases
+alias ll='ls -al'
+alias la='ls -A'
+alias l='ls -CF'
+
+
+# This handy tool tells you how much space you have left on a drive. 
+# Only thing is, if you run the command by itself it replies in 1K blocks. 
+# Most people would prefer to see this in terms of MB. To make that happen,
+# add this alias:
+alias df='df -h'
+
+# Here is an interesting trick. It highlights the match in the results, 
+# and makes “grep foo *” less noisy:
+alias egrep='egrep --color=tty --exclude="*.svn*"'
+alias fgrep='fgrep --color=tty --exclude="*.svn*"'
+alias grep='grep --color=tty --exclude="*.svn*"'
+
+# Recursive grep
+alias rgrep='find . -type f -print | xargs grep --color=tty --exclude="*.svn*"'
+
+# Rsync planc
+#alias backupplanc='rsync -avzPp -e "trickle -s -d 80 -u 20 ssh -i /home/serif/.ssh/serif.key -ax -o ClearAllForwardings=yes" plancpho@plancphotography.com:~/testback /archive/rsync/planc_backup/'
+
+# PS my stuff
+alias psme='ps -u `whoami`'
+
+alias dia='dia 2>/dev/null &'

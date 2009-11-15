@@ -1,0 +1,529 @@
+" -----------------------------------------------------------------------------  
+" |                            VIM Settings                                   |
+" |                   (see gvimrc for gui vim settings)                       |
+" -----------------------------------------------------------------------------  
+
+set nocompatible
+
+
+" Tabs ************************************************************************
+set softtabstop=4
+set shiftwidth=4
+set tabstop=4
+set expandtab
+set sta " a <Tab> in an indent inserts 'shiftwidth' spaces
+
+
+" Indenting ********************************************************************
+set ai " Automatically set the indent of a new line (local to buffer)
+set si " smartindent	(local to buffer)
+
+
+" Scrollbars ******************************************************************
+set sidescrolloff=2
+set numberwidth=4
+
+
+" Windows *********************************************************************
+set equalalways " Multiple windows, when created, are equal in size
+set splitbelow splitright
+
+" Vertical split then hop to new buffer
+:noremap ,wsv :vsp<cr>
+
+" Horizontal split
+:noremap ,wsh :split<cr>
+
+" Close all splits except this one
+:noremap ,wo :only<cr>
+
+" Close this split
+:noremap ,wc :close<cr>
+
+" Window navigation
+:noremap ,wj <C-W><C-J><cr>
+:noremap ,wk <C-W><C-K><cr>
+:noremap ,wh <C-W><C-H><cr>
+:noremap ,wl <C-W><C-L><cr>
+
+" Quitting all except modified
+:noremap ,q :qa<CR>
+
+" Allow navigation away from modified buffers 
+set hidden
+
+" Copying and pasting across sessions ****************************************
+" We want windows and unix to share the same temp buffer file
+if has("gui_win32")
+    "copy the current visual selection to ~/.vbuf
+    vmap ,c :w! h:\.buf<CR>
+    
+    "paste ~/.vbuf
+    nmap ,p :r h:\.buf<CR>
+else
+    "copy the current visual selection to ~/.vbuf
+    vmap ,c :w! ~/.buf<CR>
+    
+    "paste ~/.vbuf
+    nmap ,p :r ~/.buf<CR>
+endif
+
+"These two commands allow anything yanked to be pasted across any session
+set clipboard=unnamed
+set go+=a
+
+" Toggle unprintable characters
+:noremap ,u :set list!<cr>
+
+" Print highlighting of tag used under cursror
+:noremap ,s :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+            \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+            \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
+
+" Cursor highlights ***********************************************************
+" Nice feature, but very slow; highlights the entire line
+"set cursorline
+"set cursorcolumn
+
+" Doxygen Related *************************************************************
+let g:DoxygenToolkit_briefTag_pre="@brief  "
+let g:DoxygenToolkit_paramTag_pre="@param "
+let g:DoxygenToolkit_returnTag="@return   "
+"let g:DoxygenToolkit_blockHeader="--------------------------------------------------------------------------"
+"let g:DoxygenToolkit_blockFooter="----------------------------------------------------------------------------"
+let g:DoxygenToolkit_authorName="Reshen Amin"
+"let g:DoxygenToolkit_licenseTag="My own license"   <-- !!! Does not end with "\<enter>"
+:noremap ,dx :Dox<CR>
+
+
+" Mini Buffer Explorer  http://www.vim.org/scripts/script.php?script_id=159
+let g:miniBufExplMapWindowNavVim = 1
+let g:miniBufExplMapWindowNavArrows = 1
+let g:miniBufExplMapCTabSwitchBufs = 1
+let g:miniBufExplModSelTarget = 1 
+" Special for mini buffer explorer
+hi link MBEVisibleChanged Question
+
+" Navigate to buffers quickly
+" Mappings to access buffers (don't use ",p" because a
+" delay before pressing "p" would accidentally paste).
+" ,l       : list buffers
+" ,b ,f ,g : go back/forward/last-used
+" ,1 ,2 ,3 : go to buffer 1/2/3 etc
+nnoremap ,l :ls<CR>
+nnoremap ,b :bp<CR>
+nnoremap ,f :bn<CR>
+nnoremap ,g :e#<CR>
+nnoremap ,1 :1b<CR>
+nnoremap ,2 :2b<CR>
+nnoremap ,3 :3b<CR>
+nnoremap ,4 :4b<CR>
+nnoremap ,5 :5b<CR>
+nnoremap ,6 :6b<CR>
+nnoremap ,7 :7b<CR>
+nnoremap ,8 :8b<CR>
+nnoremap ,9 :9b<CR>
+nnoremap ,0 :10b<CR>
+
+" Put new window below
+" current or on the
+" right for vertical split
+let g:miniBufExplSplitBelow=0  
+
+" Single click to switch to buffers
+let g:miniBufExplUseSingleClick = 1
+
+
+
+" Switching between source and header file: http://vim.wikia.com/wiki/Easily_switch_between_source_and_header_file
+let g:ext="cpp" "Default to cpp / h switching
+function! SwitchSourceHeader()
+  "update!
+  if expand ("%:t") == expand ("%:t:r") . ".cpp"
+    let g:ext="cpp"
+    find %:t:r.h
+  elseif expand ("%:t") == expand ("%:t:r") . ".m"
+    let g:ext="m"
+    find %:t:r.h
+  elseif g:ext == "m"
+    find %:t:r.m 
+  else
+    find %:t:r.cpp
+  endif
+endfunction
+nmap ,h :call SwitchSourceHeader()<CR>
+
+
+" vimrc reloading ************************************************************
+",v brings up my .vimrc
+",V reloads it -- making all changes active (have to save first)
+"autocmd BufWritePost vimrc source %
+if has("gui_win32")
+  map ,v :e $VIMRUNTIME/../vimfiles/vimrc<CR>
+  map ,V :so $VIMRUNTIME/../vimfiles/vimrc<CR>:exe ":echo 'vimrc reloaded'"<CR>
+else
+  map ,v :e $MYVIMRC<CR>
+  map ,V :so $MYVIMRC<CR>:exe ":echo 'vimrc reloaded'"<CR>
+endif
+
+
+" always add the current file's directory to the path if not already there
+autocmd BufRead *
+\ let s:tempPath=escape(escape(expand("%:p:h"), ' '), '\ ') |
+\ exec "set path-=".s:tempPath |
+\ exec "set path+=".s:tempPath
+
+
+" Templates *******************************************************************
+" http://vim.wikia.com/wiki/Use_eval_to_create_dynamic_templates
+if has("gui_win32")
+    map ,shh :0r $VIMRUNTIME\..\vimfiles\templates\h_header.txt<CR>:%substitute#\[:VIM_EVAL:\]\(.\{-\}\)\[:END_EVAL:\]#\=eval(submatch(1))#ge<CR>
+    map ,sch :0r $VIMRUNTIME\..\vimfiles\templates\c_header.txt<CR>:%substitute#\[:VIM_EVAL:\]\(.\{-\}\)\[:END_EVAL:\]#\=eval(submatch(1))#ge<CR>
+    map ,sfh :let g:cword=expand("<cword>")<CR>:-1r $VIMRUNTIME\..\vimfiles\templates\fn_header.txt<CR>:%substitute#\[:VIM_EVAL:\]\(.\{-\}\)\[:END_EVAL:\]#\=eval(submatch(1))#ge<CR>
+else
+    map ,shh :0r ~/.vim/templates/h_header.txt<CR>:%substitute#\[:VIM_EVAL:\]\(.\{-\}\)\[:END_EVAL:\]#\=eval(submatch(1))#ge<CR>
+    map ,sch :0r ~/.vim/templates/c_header.txt<CR>:%substitute#\[:VIM_EVAL:\]\(.\{-\}\)\[:END_EVAL:\]#\=eval(submatch(1))#ge<CR>
+    map ,sfh :let g:cword=expand("<cword>")<CR>:-1r ~/.vim/templates/fn_header.txt<CR>:%substitute#\[:VIM_EVAL:\]\(.\{-\}\)\[:END_EVAL:\]#\=eval(submatch(1))#ge<CR>
+endif
+
+
+" Searching *******************************************************************
+set hlsearch  " highlight search
+set incsearch  " incremental search, search as you type
+set ignorecase " Ignore case when searching 
+set smartcase " Ignore case when searching lowercase
+
+" Will allow you to use :w!! to write to a file using sudo if you forgot to
+" 'sudo vim file' (it will prompt for sudo password when writing)
+cmap w!! %!sudo tee > /dev/null %
+
+" Diff Options
+:set diffopt=filler,iwhite,vertical
+
+" Update the diff window
+:noremap ,du :diffupdate<CR>
+
+" Diff against pred helper function
+function! CTDiffPred(var)
+    " Diff window navigation, navigate to prev/next diff and center window
+    " on it
+    :noremap ,j ]cz.
+    :noremap ,k [cz.
+
+    let buffer = bufname('%')
+    if (a:var == "0")
+        let prevFile = system('echo `cleartool ls -short ' . buffer . '` | sed -e "s/\(.*\)\/\(.*\)/\1\/0/"')
+    else
+        let prevFile = system('cleartool describe -fmt "%En@@%PVn" ' . buffer)
+    endif
+
+    " Execute diff, place newer file on right
+    execute "lefta vert diffsplit " . prevFile
+endfunction
+
+" Diff toggle
+function! DiffToggle(var)
+   if &diff == "off"
+       :call CTDiffPred(a:var)
+       " Switch to cursor right window (newer file)
+       :wincmd l
+       " Move cursor to beginning of file
+       :0
+   else
+       :diffoff
+       :only
+   endif
+endfunction
+
+" Diff against pred
+:noremap ,dp :call DiffToggle("p")<CR>
+
+" Diff against base version
+:noremap ,d0 :call DiffToggle("0")<CR>
+
+" Diff get helper
+:noremap ,dg :diffget<CR>
+
+
+" Colors **********************************************************************
+"set t_Co=256 " 256 colors
+set background=dark 
+syntax on " syntax highlighting
+colorscheme ir_black
+
+
+" Status Line *****************************************************************
+set statusline=%F%m%r%h%w\ [%l,%c]\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]
+
+"Always show status line
+set laststatus=2
+
+set showcmd
+set ruler " Show ruler
+"set ch=2 " Make command line two lines high
+
+
+" Line Wrapping ***************************************************************
+set nowrap
+set linebreak  " Wrap at word
+
+" Never show tab line (switched to mini buff explorer)
+set showtabline=0
+
+" Max number of taqbs
+set tabpagemax=32
+
+:set tabline=%!MyTabLine()
+function! MyTabLine()
+  let s = ''
+  for i in range(tabpagenr('$'))
+    " select the highlighting
+    if i + 1 == tabpagenr()
+      let s .= '%#TabLineSel#'
+    else
+      let s .= '%#TabLine#'
+    endif
+
+    " set the tab page number (for mouse clicks)
+    let s .= '%' . (i + 1) . 'T'
+
+    " the label is made by MyTabLabel()
+    let s .= ' %{MyTabLabel(' . (i + 1) . ')} '
+  endfor
+
+  " after the last tab fill with TabLineFill and reset tab page nr
+  let s .= '%#TabLineFill#%T'
+
+  " right-align the label to close the current tab page
+  if tabpagenr('$') > 1
+    let s .= '%=%#TabLine#%999XX'
+  endif
+
+  return s
+endfunction
+
+function! MyTabLabel(n)
+    let buflist = tabpagebuflist(a:n)
+    let winnr = tabpagewinnr(a:n)
+
+    " Grab filename
+    let file = fnamemodify(bufname(buflist[winnr - 1]), ':p:t')
+
+
+    " Substitute no name for empty / new files
+    if file == ''
+        let file = '[No Name]'
+    endif
+
+    if (getbufvar(buflist[winnr - 1], '&modified') == 1)
+        let file = file . " +"
+    endif
+
+    return a:n . " " . file
+endfunction
+
+
+
+
+" Mappings ********************************************************************
+" Professor VIM says '87% of users prefer jj over esc', jj abrams strongly disagrees
+imap jj <Esc>
+imap uu _
+imap hh =>
+imap aa @
+
+
+" Directories *****************************************************************
+" Setup backup location and enable
+"set backupdir=~/backup/vim
+"set backup
+
+" Set Swap directory
+"set directory=~/backup/vim/swap
+
+" Sets path to directory buffer was loaded from
+"autocmd BufEnter * lcd %:p:h
+
+
+" File Stuff ******************************************************************
+filetype plugin indent on
+" To show current filetype use: set filetype
+
+autocmd FileType html :set filetype=xhtml " we couldn't care less about html
+
+
+" Inser New Line **************************************************************
+map <S-Enter> O<ESC> " awesome, inserts new line without going into insert mode
+map <Enter> o<ESC>
+set fo-=r " do not insert a comment leader after an enter, (no work, fix!!)
+
+
+" Sessions ********************************************************************
+" Sets what is saved when you save a session
+set sessionoptions=blank,buffers,curdir,folds,help,resize,tabpages,winsize
+
+" Save the current session
+:noremap <c-s> :CMiniBufExplorer<cr>:TlistClose<cr>:mksession!<cr>:TlistToggle<CR>:MiniBufExplorer<CR>
+
+" Load the last saved session
+:noremap <c-o> :CMiniBufExplorer<cr>:TlistClose<cr>:source Session.vim<cr>:TlistOpen<CR>:MiniBufExplorer<CR>
+
+
+" http://stackoverflow.com/questions/607435/why-does-vim-save-files-with-a-extension/607475
+" The *.ext~ file is a backup file, containing the file as it was before you 
+" edited it.
+" The *.ext.swp file is the swap file, which serves as a lock file and contains 
+" the undo/redo history as well as any other internal info VIM needs. In case 
+" of a crash you can re-open your file and VIM will restore it's previous state 
+" from the swap file (which I find helpful, so I don't switch it off).
+" To switch off automatic creation of backup files, use (in your vimrc):
+set nobackup
+set nowritebackup
+
+
+" Misc ************************************************************************
+set backspace=indent,eol,start
+set number " Show line numbers
+set matchpairs+=<:>
+set vb t_vb= " Turn off the bell, this could be more annoying, but I'm not sure how
+set novisualbell
+
+" Set list Chars - for showing characters that are not
+" normally displayed i.e. whitespace, tabs, EOL
+"set listchars=trail:.,tab:>-,eol:$
+"set nolist
+
+
+" Mouse ***********************************************************************
+set mouse=a " Enable the mouse
+"behave xterm
+"set selectmode=mouse
+
+
+" Cursor Movement *************************************************************
+" Make cursor move by visual lines instead of file lines (when wrapping)
+map <up> gk
+map k gk
+imap <up> <C-o>gk
+map <down> gj
+map j gj
+imap <down> <C-o>gj
+map E ge
+
+
+" Ruby stuff ******************************************************************
+"compiler ruby         " Enable compiler support for ruby
+"map <F5> :!ruby %<CR>
+
+
+" Omni Completion *************************************************************
+autocmd FileType html :set omnifunc=htmlcomplete#CompleteTags
+autocmd FileType python set omnifunc=pythoncomplete#Complete
+autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+autocmd FileType c set omnifunc=ccomplete#Complete
+autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete " may require ruby compiled in
+
+" Tags ***********************************************************************
+" Close the vim window when the only window open is the taglist window
+let Tlist_Exit_OnlyWindow = 1
+" Open the taglist window, gain focus on opening
+nnoremap <silent> ,t :TlistToggle<CR>
+let Tlist_GainFocus_On_ToggleOpen = 0
+let Tlist_Use_Right_Window = 1 
+let Tlist_Enable_Fold_Column = 0 
+"let Tlist_File_Fold_Auto_Close = 1
+let Tlist_Show_One_File = 1 " especially with this one 
+let Tlist_Compact_Format = 1 
+let Tlist_Use_SingleClick = 1
+
+"let Tlist_Auto_Open = 1
+if has("gui_win32")
+    :noremap ,e :!D:\reshen\apps\etags\ctags57\ctags -R *.h *.c *.cpp<CR>
+    let Tlist_Ctags_Cmd = 'D:\reshen\apps\etags\ctags57\ctags.exe'
+else
+    :noremap ,e :!ctags -R *.h *.cpp<CR>
+    "let Tlist_Ctags_Cmd = '/proj/s_core/local/ctags/bin/etags'
+endif
+set updatetime=1000 
+
+" Replace windows newlines with unix ones
+:set magic
+:noremap ,w :%s///gc<CR>
+
+" Folding
+:set nofoldenable
+" Dirty folding trick, forces folding off
+:set foldminlines=99999
+
+
+" -----------------------------------------------------------------------------  
+" |                              Pluggins                                     |
+" -----------------------------------------------------------------------------  
+
+" NERDTree ********************************************************************
+:noremap ,n :NERDTreeToggle<CR>
+" List of files for nerd tree to ignore
+let NERDTreeIgnore=['\.keep.*$', '\.swp$', '\~$', 'tags']
+
+" SnippetsEmu *****************************************************************
+"imap <unique> <C-j> <Plug>Jumper
+"let g:snip_start_tag = "_\."
+"let g:snip_end_tag = "\._"
+"let g:snip_elem_delim = ":"
+"let g:snip_set_textmate_cp = '1'  " Tab to expand snippets, not automatically.
+"
+:iab #b /************************************************
+:iab #e ************************************************/
+
+
+" fuzzyfinder_textmate ********************************************************
+"map ,f :FuzzyFinderTextMate<CR>
+"map ,b :FuzzyFinderBuffer<CR>
+"let g:fuzzy_ignore = '.o;.obj;.bak;.exe;.pyc;.pyo;.DS_Store;.db'
+
+
+" autocomplpop ***************************************************************
+" complete option
+"set complete=.,w,b,u,t,k
+"let g:AutoComplPop_CompleteOption = '.,w,b,u,t,k'
+"set complete=.
+let g:AutoComplPop_IgnoreCaseOption = 0
+let g:AutoComplPop_BehaviorKeywordLength = 2
+
+
+" Abbreviations **************************************************************
+iab date    <C-R>=strftime("%Y.%m.%d")<CR>
+iab vh      <C-R>=strftime("%m/%d/%y  Reshen Amin        ")<CR>
+iab rsa     <C-R>=strftime("Reshen Amin")<CR>
+" filename (no path)
+iab fn      <C-R>=fnamemodify(getreg('%'), ":t")<CR>
+iab td      // TODO
+
+ 
+" Code auto buffer + taglist
+"if has("gui_win32")
+    "autocmd! BufNewFile,BufRead *.m,*.cpp,*.C,*.c,*.h set fo=croql syntax=c  et tw=80 ts=4 sw=4   cindent comments=n:\|,n::,sr:/*,mb:\*,elx:*/,:// |execute("TlistOpen")|execute("wincmd h")
+    autocmd! BufNewFile,BufRead *.m,*.cpp,*.C,*.c,*.h set fo=croql syntax=c  et tw=80 ts=4 sw=4   cindent comments=n:\|,n::,sr:/*,mb:\*,elx:*/,://
+"else
+    "autocmd! BufNewFile,BufRead *.m,*.cpp,*.C,*.c,*.h set fo=croql syntax=c  et tw=80 ts=4 sw=4   cindent comments=n:\|,n::,sr:/*,mb:\*,el:*/,://
+"endif
+
+" -----------------------------------------------------------------------------  
+" |                             OS Specific                                   |
+" |                      (GUI stuff goes in gvimrc)                           |
+" -----------------------------------------------------------------------------  
+
+" Mac *************************************************************************
+"if has("mac") 
+  "" 
+"endif
+ 
+" Windows *********************************************************************
+"if has("gui_win32")
+  "" 
+"endif
+
