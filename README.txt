@@ -1,5 +1,9 @@
 This project is source controlled at GitHub: http://github.com/reshen/env
-git clone git://github.com/reshen/env.git
+
+Public Clone URL: git://github.com/reshen/env.git
+
+My Clone URL: git@github.com:reshen/env.git 
+
 
 To install the unix env, svn checkout this folder and create
 symbolic links to the environment settings.
