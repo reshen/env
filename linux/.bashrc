@@ -5,6 +5,11 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
+# Git completion
+if [ -f .git-completion.bash ]; then
+	. .git-completion.bash
+fi
+
 # Colors
 NC='\[\033[0m\]'    # unsets color to term's fg color
 
@@ -37,10 +42,6 @@ BGB="\[\033[44m\]"
 BGM="\[\033[45m\]"
 BGC="\[\033[46m\]"
 BGW="\[\033[47m\]"
-
-# Set the terminal to identify as a color terminal.  This allows colors to work properly in vim72
-# on solaris 10 boxes: http://vim.wikia.com/wiki/Getting_colors_to_work_on_solaris
-export TERM=xtermc
 
 # Prompt
 
@@ -103,6 +104,11 @@ PATH=\
 :$PATH
 else
     echo "SunOS setup..."
+
+    # Set the terminal to identify as a color terminal.  This allows colors to work properly in vim72
+    # on solaris 10 boxes: http://vim.wikia.com/wiki/Getting_colors_to_work_on_solaris
+    export TERM=xtermc
+
     # Update path
 PATH=\
 :.\

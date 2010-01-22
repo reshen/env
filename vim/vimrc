@@ -75,6 +75,9 @@ set go+=a
 " Toggle unprintable characters
 :noremap ,u :set list!<cr>
 
+" Toggle highlight search
+:noremap ,hl :nohlsearch<cr>
+
 " Print highlighting of tag used under cursror
 :noremap ,s :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
             \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
@@ -96,22 +99,15 @@ let g:DoxygenToolkit_authorName="Reshen Amin"
 "let g:DoxygenToolkit_licenseTag="My own license"   <-- !!! Does not end with "\<enter>"
 :noremap ,dx :Dox<CR>
 
-
-" Mini Buffer Explorer  http://www.vim.org/scripts/script.php?script_id=159
-let g:miniBufExplMapWindowNavVim = 1
-let g:miniBufExplMapWindowNavArrows = 1
-let g:miniBufExplMapCTabSwitchBufs = 1
-let g:miniBufExplModSelTarget = 1 
-" Special for mini buffer explorer
-hi link MBEVisibleChanged Question
+" ----------------------------------------------------
+" Quick buffers 
+let g:qb_hotkey = ",l"
 
 " Navigate to buffers quickly
 " Mappings to access buffers (don't use ",p" because a
 " delay before pressing "p" would accidentally paste).
-" ,l       : list buffers
 " ,b ,f ,g : go back/forward/last-used
 " ,1 ,2 ,3 : go to buffer 1/2/3 etc
-nnoremap ,l :ls<CR>
 nnoremap ,b :bp<CR>
 nnoremap ,f :bn<CR>
 nnoremap ,g :e#<CR>
@@ -125,15 +121,6 @@ nnoremap ,7 :7b<CR>
 nnoremap ,8 :8b<CR>
 nnoremap ,9 :9b<CR>
 nnoremap ,0 :10b<CR>
-
-" Put new window below
-" current or on the
-" right for vertical split
-let g:miniBufExplSplitBelow=0  
-
-" Single click to switch to buffers
-let g:miniBufExplUseSingleClick = 1
-
 
 
 " Switching between source and header file: http://vim.wikia.com/wiki/Easily_switch_between_source_and_header_file
@@ -268,9 +255,6 @@ set ruler " Show ruler
 set nowrap
 set linebreak  " Wrap at word
 
-" Never show tab line (switched to mini buff explorer)
-set showtabline=0
-
 " Max number of taqbs
 set tabpagemax=32
 
@@ -358,16 +342,20 @@ map <S-Enter> O<ESC> " awesome, inserts new line without going into insert mode
 map <Enter> o<ESC>
 set fo-=r " do not insert a comment leader after an enter, (no work, fix!!)
 
+" Insert #if 0 - #endif around block of code
+" <http://vim.wikia.com/wiki/Insert_if/endif_around_block_of_code>
+map ,0 mz'aO<Esc>O#if 0 /* TODO */<Esc>'zo<Esc>i#endif /* TODO 0 */<Esc>
+
 
 " Sessions ********************************************************************
 " Sets what is saved when you save a session
 set sessionoptions=blank,buffers,curdir,folds,help,resize,tabpages,winsize
 
 " Save the current session
-:noremap <c-s> :CMiniBufExplorer<cr>:TlistClose<cr>:mksession!<cr>:TlistToggle<CR>:MiniBufExplorer<CR>
+:noremap <c-s> :mksession! ~/Session.vim<cr>
 
 " Load the last saved session
-:noremap <c-o> :CMiniBufExplorer<cr>:TlistClose<cr>:source Session.vim<cr>:TlistOpen<CR>:MiniBufExplorer<CR>
+:noremap <c-o> :source ~/Session.vim<cr>
 
 
 " http://stackoverflow.com/questions/607435/why-does-vim-save-files-with-a-extension/607475
@@ -459,6 +447,14 @@ set updatetime=1000
 " Dirty folding trick, forces folding off
 :set foldminlines=99999
 
+:set tags=tags\ TAGS\ ../build/TAGS
+
+
+" When on, Vim will change the current working directory whenever you
+" open a file, switch buffers, delete a buffer or open/close a window.
+" It will change to the directory containing the file which was opened
+" or selected.
+:set autochdir
 
 " -----------------------------------------------------------------------------  
 " |                              Pluggins                                     |
