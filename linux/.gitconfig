@@ -1,0 +1,27 @@
+[user]
+    name = reshen
+    email = reshen817@gmail.com
+[github]
+    user = reshen
+[diff]
+    tool = kdiff3
+[merge]
+    tool = kdiff3
+[mergetool "kdiff3"]
+    keepBackup = false
+    trustExitCode = false
+[difftool "kdiff3"]
+    keepBackup = false
+    trustExitCode = false
+[color]
+    ui = true
+[core]
+    autocrlf = true
+[alias]
+    st = status
+    ci = commit
+    br = branch
+    co = checkout
+    df = diff
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+	unstage = reset HEAD --
